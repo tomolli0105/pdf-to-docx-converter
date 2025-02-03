@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to DOCX Converter</title>
+</head>
+<body>
+    <h1>Upload a PDF to Convert</h1>
+    <input type="file" id="fileInput" accept="application/pdf">
+    <button onclick="uploadFile()">Convert</button>
+    <p id="status"></p>
+
+    <script>
+        async function uploadFile() {
+            const fileInput = document.getElementById("fileInput");
+            if (!fileInput.files.length) {
+                alert("Please select a PDF file.");
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            document.getElementById("status").innerText = "Uploading...";
+
+            try {
+                let response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData
+                });
+
+                let result = await response.json();
+                if (result.status === "success") {
+                    document.getElementById("status").innerHTML = 
+                        `File converted. <a href="${result.url}" download>Download DOCX</a>`;
+                } else {
+                    document.getElementById("status").innerText = "Conversion failed.";
+                }
+            } catch (error) {
+                document.getElementById("status").innerText = "Error occurred.";
+            }
+        }
+    </script>
+</body>
+</html>
